@@ -1,7 +1,10 @@
 import csv
+import pandas as pd
 
 
 # Convert into a class that has load_html_data, load_json_data, filtering options, etc...
+
+# Add a test or two
 
 def load_coin_data(sorted=False):
     with open('static/coins.txt') as f:
@@ -12,7 +15,6 @@ def load_coin_data(sorted=False):
             # This file is a tricky - 
             # couldn't think of a clever way with regex, so here we are. 
             # Would have greatly preferred pd.read_csv()
-
             _row = row[0].strip()
             name = _row[:18].strip()
             cap = _row[18:33].strip()
@@ -27,3 +29,7 @@ def load_coin_data(sorted=False):
                 "Status": status
             })
     return dict_rows
+
+def load_summary_table():
+    df = pd.DataFrame.from_records(load_coin_data())
+    # Group by or whatever here
