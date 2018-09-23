@@ -20,7 +20,7 @@
 <body>
 
     <div class="container">
-        <nav class="navbar navbar-expand-md navbar-light bg-light mb-5">
+        <nav class="navbar navbar-default navbar-static-top navbar-expand-md navbar-light bg-light mb-5">
             <a class="navbar-brand" href="#">Keep the change</a>
             <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
                 aria-expanded="false" aria-label="Toggle navigation">
@@ -73,21 +73,11 @@
             </div>
             <div class="row col-md-3">
                 <h2 class="text-center pl-2">Price vs Supply</h2>
-
-                
-                <div id="bubbleChart"></div>
-
+                <div id="bubbleChart" class="position-absolute">
+                </div>
             </div>
-
         </div>
-
-
-
     </div>
-
-
-
-
     </div>
 
     <!-- Optional JavaScript -->
@@ -118,6 +108,7 @@
             console.log(table.rows({ filter: 'applied' }).data());
         })
 
+        // Toggle the table to show Enabled Rows
         $('#enabledStatus').on('change', function () {
             if ($(this).is(':checked')) {
                 $.fn.dataTable.ext.search.push(
@@ -129,34 +120,51 @@
                 $.fn.dataTable.ext.search.pop()
             }
             table.draw()
-        })
+        });
 
+
+        // Plotlyjs Homepage Chart 
+
+        // To do: charts page with distributional aspects or tabluar summary
+        // Use pandas, modify the data reader function or convert to a class
+        let allData = table.data();
+        let prices = allData.map(x => parseFloat(x[2]))
+        let supply = allData.map(x => parseFloat(x[3])/10000)
+        let caps = allData.map(x => parseFloat(x[1])/1000)
+        console.log(Object.values(prices))
+        //allData.map(x => console.log(x.length)) // check all vals
+        // var trace1 = {
+        //     y: Object.values(prices).slice(0,100),
+        //     x: Object.values(supply).slice(0,100),
+        //     mode: 'markers',
+        //     type: 'scatter'
+        // };
 
         var trace1 = {
-        x: [1, 2, 3, 4],
-        y: [10, 11, 12, 13],
-        mode: 'markers',
-        marker: {
-            size: [40, 60, 80, 100] // marketCap
+            x: Object.values(prices),
+            type: 'histogram',
+            histnorm: 'probability',
+            xbins: {
+                end: 60000, 
+                size: 10, 
+                start: 1
+            }
         }
-        };
-
         var data = [trace1];
-
         var layout = {
-        title: 'Price, Supply and cap',
-        showlegend: false,
-        height: 400,
-        width: 400
+            title: 'Price Distribution',
+            showlegend: false,
+            height: 400,
+            width: 400
         };
 
         Plotly.newPlot('bubbleChart', data, layout);
 
-        // But get the active rows - https://stackoverflow.com/questions/29191760/jquery-datatables-getting-selected-row-values
 
-            var colArray = $('#myTable td:nth-child(3)').map(function(){
-                return $(this).text();
-            }).get()​;
+
+
+
+
 
         // // Decided to use datatables rather than code my own sort behavior
         // function filterTable(colIndex, searchTarget) {
