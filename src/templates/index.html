@@ -6,6 +6,11 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+
+
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
@@ -35,51 +40,49 @@
             </div>
         </nav>
 
+
+
+        <div class="row pb-3">
+            <input type="checkbox" id="enabledStatus"> Show Enabled Only
+        </div>
+
         <div class="row">
-            <div class="row col-md-4">
-                <p>Search For Currency Name</p>
-                <div class="form-group">
-                    <label for=""></label>
-                    <input type="text" class="form-control" name="inputName" id="nameTextInput" aria-describedby="helpId" placeholder="">
-                    <small id="helpId" class="form-text text-muted">Search Name</small>
-                </div>
+            <div class="row col-md-8">
+                <table class="table table-sm " id='myTable'>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Name</th>
+                            <th>Market Cap</th>
+                            <th>Price</th>
+                            <th>Supply</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub_dict in template_data %}
+                        <tr>
+                            <td>{{sub_dict['Name']}}</td>
+                            <td>{{sub_dict['Market Cap']}}</td>
+                            <td>{{sub_dict['Price']}}</td>
+                            <td>{{sub_dict['Supply']}}</td>
+                            <td>{{sub_dict['Status']}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="row col-md-3">
+                <h2 class="text-center pl-2">Price vs Supply</h2>
+
+                
+                <div id="bubbleChart"></div>
+
             </div>
 
-            <div class="row col-md-4">
-                <p>Toggle Enabled
-                    <input type="checkbox" name="" id="statusFilterCheck">
-                </p>
-
-            </div>
         </div>
 
-        <hr>
-        <div class="row col-md-12">
-            <table class="table" id='myTable'>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Market Cap</th>
-                        <th>Price</th>
-                        <th>Supply</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sub_dict in template_data %}
-                    <tr>
-                        <td>{{sub_dict['Name']}}</td>
-                        <td>{{sub_dict['Market Cap']}}</td>
-                        <td>{{sub_dict['Price']}}</td>
-                        <td>{{sub_dict['Supply']}}</td>
-                        <td>{{sub_dict['Status']}}</td>
-                    </tr>
-                    {% endfor %}
 
 
-                </tbody>
-            </table>
-        </div>
     </div>
 
 
@@ -96,43 +99,102 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
         crossorigin="anonymous"></script>
 
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
     <script>
 
 
-        function filterTable(colIndex, searchTarget) {
-            table = document.getElementById("myTable");
-            tr = table.getElementsByTagName("tr");
+        $(document).ready(function () {
+            $('#myTable').DataTable();
 
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[colIndex];
-                if (td) {
-                    if (td.innerHTML.indexOf(searchTarget) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        } // end filterTable
+        });
 
-        let textInput = document.getElementById('nameTextInput')
-        textInput.addEventListener('keyup', (e) => {
-            e.preventDefault();
-            let inputVal = document.getElementById('nameTextInput').value;
-            filterTable(0, inputVal)
+        // 
+        let table = $('#myTable').DataTable();
+        table.on('search.dt', function () {
+            //number of filtered rows
+            console.log(table.rows({ filter: 'applied' }).nodes().length);
+            //filtered rows data as arrays
+            console.log(table.rows({ filter: 'applied' }).data());
         })
 
-        // Deal with checkbox - create a function called filter table
-        let cb = document.getElementById('statusFilterCheck')
-        cb.addEventListener('change', function () {
-            if (this.checked) {
-                // Checkbox is checked..
-                console.log('checked now')
+        $('#enabledStatus').on('change', function () {
+            if ($(this).is(':checked')) {
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        return data[4] == "Enabled"
+                    }
+                )
             } else {
-                // Checkbox is not checked..
-                console.log('unchecked now')
+                $.fn.dataTable.ext.search.pop()
             }
-        });
+            table.draw()
+        })
+
+
+        var trace1 = {
+        x: [1, 2, 3, 4],
+        y: [10, 11, 12, 13],
+        mode: 'markers',
+        marker: {
+            size: [40, 60, 80, 100] // marketCap
+        }
+        };
+
+        var data = [trace1];
+
+        var layout = {
+        title: 'Price, Supply and cap',
+        showlegend: false,
+        height: 400,
+        width: 400
+        };
+
+        Plotly.newPlot('bubbleChart', data, layout);
+
+        // But get the active rows - https://stackoverflow.com/questions/29191760/jquery-datatables-getting-selected-row-values
+
+            var colArray = $('#myTable td:nth-child(3)').map(function(){
+                return $(this).text();
+            }).get()​;
+
+        // // Decided to use datatables rather than code my own sort behavior
+        // function filterTable(colIndex, searchTarget) {
+        //     table = document.getElementById("myTable");
+        //     tr = table.getElementsByTagName("tr");
+
+        //     for (i = 0; i < tr.length; i++) {
+        //         td = tr[i].getElementsByTagName("td")[colIndex];
+        //         if (td) {
+        //             if (td.innerHTML.indexOf(searchTarget) > -1) {
+        //                 tr[i].style.display = "";
+        //             } else {
+        //                 tr[i].style.display = "none";
+        //             }
+        //         }
+        //     }
+        // } // end filterTable
+
+        // let textInput = document.getElementById('nameTextInput')
+        // textInput.addEventListener('keyup', (e) => {
+        //     e.preventDefault();
+        //     let inputVal = document.getElementById('nameTextInput').value;
+        //     filterTable(0, inputVal)
+        // })
+
+        // // Deal with checkbox - create a function called filter table
+        // let cb = document.getElementById('statusFilterCheck')
+        // cb.addEventListener('change', function () {
+        //     if (this.checked) {
+        //         // Checkbox is checked..
+        //         console.log('checked now')
+        //     } else {
+        //         // Checkbox is not checked..
+        //         console.log('unchecked now')
+        //     }
+        // });
+
+
 
     </script>
 
