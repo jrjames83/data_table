@@ -1,121 +1,63 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <title>Let's chat about coins - flip ya for it</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
-        crossorigin="anonymous">
-</head>
-<body>
+{% extends "base.html" %} {% block content %}
 
 <style>
     #currencyNameCounts {
         margin-top: 380px;
-    }    
+    }
 </style>
 
-    <div class="container">
-        <nav class="navbar navbar-default navbar-static-top navbar-expand-md navbar-light bg-light mb-5">
-            <a class="navbar-brand" href="/">Coin Coral</a>
-            <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="collapsibleNavId">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="apidocs">API Docs</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <div class="row pb-3">
+        <input type="checkbox" id="enabledStatus"> Show Enabled Only
+    </div>
 
-
-
-        <div class="row pb-3">
-            <input type="checkbox" id="enabledStatus"> Show Enabled Only
+    <div class="row">
+        <div class="row col-md-8">
+            <table class="table table-sm " id='myTable'>
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Market Cap</th>
+                        <th>Price</th>
+                        <th>Supply</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub_dict in template_data %}
+                    <tr>
+                        <td>{{sub_dict['Name']}}</td>
+                        <td>{{sub_dict['Market Cap']}}</td>
+                        <td>{{sub_dict['Price']}}</td>
+                        <td>{{sub_dict['Supply']}}</td>
+                        <td>{{sub_dict['Status']}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <div class="row">
-            <div class="row col-md-8">
+        <div class="row col-md-3">
+            <h2 class="text-center pl-2">Price vs Supply</h2>
+            <div id="bubbleChart" class="position-absolute"></div>
+            <ul class="position-absolute" id="currencyNameCounts">
+                <h4>Summary Stats</h4>
                 <table class="table table-sm " id='myTable'>
                     <thead class="thead-dark">
                         <tr>
                             <th>Name</th>
-                            <th>Market Cap</th>
-                            <th>Price</th>
-                            <th>Supply</th>
-                            <th>Status</th>
+                            <th>Nbr Records</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for sub_dict in template_data %}
-                        <tr>
-                            <td>{{sub_dict['Name']}}</td>
-                            <td>{{sub_dict['Market Cap']}}</td>
-                            <td>{{sub_dict['Price']}}</td>
-                            <td>{{sub_dict['Supply']}}</td>
-                            <td>{{sub_dict['Status']}}</td>
+                        <tr v-for="(key, value) in nameCounts">
+                            <td>{% raw %}{{value}}{% endraw %}</td>
+                            <td>{% raw %}{{key}}{% endraw %}</td>
                         </tr>
-                        {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="row col-md-3">
-                <h2 class="text-center pl-2">Price vs Supply</h2>
-                <div id="bubbleChart" class="position-absolute"></div>
-                <ul class="position-absolute" id="currencyNameCounts">
-                    <h4>Summary Stats</h4>
-
-                    <table class="table table-sm " id='myTable'>
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Nbr Records</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(key, value) in nameCounts">
-                                    <td>{% raw %}{{value}}{% endraw %}</td>
-                                    <td>{% raw %}{{key}}{% endraw %}</td>
-                                </tr>                                
-                            </tbody>
-                        </table>                    
-                </ul>                 
-            </div>
-           
+            </ul>
         </div>
+
     </div>
-    </div>
-
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-
-
-
-</body>
-
-</html>
+</div>
+</div>
+{% endblock %}

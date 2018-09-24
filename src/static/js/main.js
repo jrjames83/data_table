@@ -53,11 +53,10 @@ Plotly.newPlot('bubbleChart', data, layout);
 
 
 
-// Summary <ul> under chart using vue
+// Summary <ul> under chart using vuejs
 var nameCounts = new Vue({
     el: '#currencyNameCounts',
     data: {
-      
     },
     computed: {
         nameCounts: function() {

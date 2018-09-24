@@ -3,7 +3,7 @@ import csv
 
 from flask import Flask, url_for, jsonify, render_template, request, abort
 
-from data_loader import load_coin_data
+from data_loader import load_coin_data, grouped_data_loader
 
 
 app = Flask(__name__)
@@ -21,6 +21,16 @@ def index():
 def api_docs():
     return render_template('apidocs.html')
 
+
+@app.route('/api/groups/')
+def return_grouped_data():
+    """Future: allow the grouping key to come via the request"""
+    try:
+        grouped = grouped_data_loader('Name')
+        return jsonify(grouped)
+    except:
+        abort(404)
+
 # /api/coins/?name=Bitcoin&min_price=5000
 @app.route('/api/coins/')
 def return_json_response():
@@ -31,7 +41,8 @@ def return_json_response():
         dict_rows = load_coin_data()
 
         if name_filter and price_filter:
-            filtered_names = [row for row in dict_rows if name_filter.lower() in row.get('Name').lower()]
+            filtered_names = [row for row in dict_rows 
+                if name_filter.lower() in row.get('Name').lower()]
             filtered_prices = [row for row in filtered_names if row.get('Price') != "" 
                 and float(row.get('Price')) > float(price_filter)]
             return jsonify(filtered_prices)
@@ -46,7 +57,6 @@ def return_json_response():
 
         return jsonify(dict_rows)
     except:
-        raise
         abort(404)
 
 

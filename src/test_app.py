@@ -1,7 +1,7 @@
 import unittest
 import random
 
-from data_loader import load_coin_data
+from data_loader import load_coin_data, grouped_data_loader
 from flask_app import app
 
 
@@ -9,6 +9,7 @@ from flask_app import app
 class TestDataLoader(unittest.TestCase):
     def setUp(self):
         self.data = load_coin_data()
+        self.grouped = grouped_data_loader('Name')
 
     def test_data_is_a_list(self):
         self.assertEqual(type(self.data), list)
@@ -18,6 +19,9 @@ class TestDataLoader(unittest.TestCase):
 
     def test_data_contains_dicts(self):
         self.assertEqual(type(random.choice(self.data)), dict)
+
+    def test_grouped_data_loader_returns_dict(self):
+        self.assertEqual(type(self.grouped), dict)
 
 
 class TestVariousResponses(unittest.TestCase):
@@ -52,6 +56,9 @@ class TestVariousResponses(unittest.TestCase):
         response = self.app.get('/api/coins/?min_price=2000&name=ether')
         self.assertEqual(response.content_type, 'application/json')
           
+    def test_grouped_api_response_with_json(self):
+        response = self.app.get('/api/groups/')
+        self.assertEqual(response.content_type, 'application/json')
 
 
 

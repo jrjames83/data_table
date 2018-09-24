@@ -1,74 +1,40 @@
-<!doctype html>
-<html lang="en">
+{% extends "base.html" %} 
 
-<head>
-    <title>Let's chat about coins - flip ya for it</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+{% block content %}
 
+<div class="container">
+<div class="page-header">
+    <h1>API Docs
+        <small>Clearly a WIP</small>
+    </h1>
+</div>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
-        crossorigin="anonymous">
-</head>
-<body>
+<h4>/api/coins</h4>
+<p>Returns a json response of all coins
+    <a href="/api/coins/">Try it</a>
+</p>
 
+<h4>/api/coins?name=something</h4>
+<p>Returns a json response of all coins, filtered by a name
+    <a href="/api/coins/?name=bitcoin">Try it</a>
+</p>
+<h4>/api/coins?min_price=anumber</h4>
+<p>Returns a json response of all coins, filtered by those with a minimum price
+    <a href="/api/coins/?min_price=1000">Try it</a>
+</p>
+<h4>/api/coins?name=something&min_price=anumber</h4>
+<p>Get wild, and filter by both name and min price!
+    <a href="/api/coins/?name=bitcoin&min_price=511">Try it</a>
+</p>
 
-    <div class="container">
-        <nav class="navbar navbar-default navbar-static-top navbar-expand-md navbar-light bg-light mb-5">
-            <a class="navbar-brand" href="/">Coin Coral</a>
-            <button class="navbar-toggler hidden-lg-up" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-                aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="collapsibleNavId">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home
-                            <span class="sr-only">(current)</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="apidocs">API Docs</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+<h4>/api/groups/</h4>
+<p>Returns price and supply data grouped by coin name
+    <a href="/api/groups/">Try it</a>
+</p>
 
-        <div class="page-header">
-                <h1>API Docs <small>Clearly a WIP</small></h1>
-        </div>
+<h3>About this site</h3>
+<p>This site is powered by flask, with datatables, vuejs/ bootstrap on the frontend, + plotlyjs for charting</p>
+</div>
+</div>
 
-        <h4>/api/coins</h4>
-        <p>Returns a json response of all coins <a href="/api/coins/">Try it</a></p>
-        
-        <h4>/api/coins?name=something</h4>
-        <p>Returns a json response of all coins, filtered by a name <a href="/api/coins/?name=bitcoin">Try it</a></p>  
-        <h4>/api/coins?min_price=anumber</h4>
-        <p>Returns a json response of all coins, filtered by those with a minimum price <a href="/api/coins/?min_price=1000">Try it</a></p>     
-        <h4>/api/coins?name=something&min_price=anumber</h4>
-        <p>Get wild, and filter by both name and min price! <a href="/api/coins/?name=bitcoin&min_price=511">Try it</a></p>     
-
-       </div>
-
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-
-
-
-</body>
-
-</html>
+{% endblock %}
