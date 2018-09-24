@@ -1,5 +1,8 @@
 import csv
 
+# Some function to group data
+
+
 
 def load_coin_data(sort_by=None, sort_order=None):
     with open('static/coins.txt') as f:

@@ -5,6 +5,7 @@ from flask import Flask, url_for, jsonify, render_template, request, abort
 
 from data_loader import load_coin_data
 
+
 app = Flask(__name__)
 
 
@@ -16,6 +17,9 @@ def index():
     except:
         abort(404)
 
+@app.route('/apidocs/')
+def api_docs():
+    return render_template('apidocs.html')
 
 # /api/coins/?name=Bitcoin&min_price=5000
 @app.route('/api/coins/')
