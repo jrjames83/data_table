@@ -9,15 +9,20 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
 
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
         crossorigin="anonymous">
 </head>
-
 <body>
+
+<style>
+    #currencyNameCounts {
+        margin-top: 380px;
+    }    
+</style>
 
     <div class="container">
         <nav class="navbar navbar-default navbar-static-top navbar-expand-md navbar-light bg-light mb-5">
@@ -73,138 +78,42 @@
             </div>
             <div class="row col-md-3">
                 <h2 class="text-center pl-2">Price vs Supply</h2>
-                <div id="bubbleChart" class="position-absolute">
-                </div>
+                <div id="bubbleChart" class="position-absolute"></div>
+                <ul class="position-absolute" id="currencyNameCounts">
+                    <h4>Summary Stats</h4>
+
+                    <table class="table table-sm " id='myTable'>
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Nbr Records</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(key, value) in nameCounts">
+                                    <td>{% raw %}{{value}}{% endraw %}</td>
+                                    <td>{% raw %}{{key}}{% endraw %}</td>
+                                </tr>                                
+                            </tbody>
+                        </table>                    
+                </ul>                 
             </div>
+           
         </div>
     </div>
     </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
         crossorigin="anonymous"></script>
-
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-
-    <script>
-
-
-        $(document).ready(function () {
-            $('#myTable').DataTable();
-
-        });
-
-        // 
-        let table = $('#myTable').DataTable();
-        table.on('search.dt', function () {
-            //number of filtered rows
-            console.log(table.rows({ filter: 'applied' }).nodes().length);
-            //filtered rows data as arrays
-            console.log(table.rows({ filter: 'applied' }).data());
-        })
-
-        // Toggle the table to show Enabled Rows
-        $('#enabledStatus').on('change', function () {
-            if ($(this).is(':checked')) {
-                $.fn.dataTable.ext.search.push(
-                    function (settings, data, dataIndex) {
-                        return data[4] == "Enabled"
-                    }
-                )
-            } else {
-                $.fn.dataTable.ext.search.pop()
-            }
-            table.draw()
-        });
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 
-        // Plotlyjs Homepage Chart 
-
-        // To do: charts page with distributional aspects or tabluar summary
-        // Use pandas, modify the data reader function or convert to a class
-        let allData = table.data();
-        let prices = allData.map(x => parseFloat(x[2]))
-        let supply = allData.map(x => parseFloat(x[3])/10000)
-        let caps = allData.map(x => parseFloat(x[1])/1000)
-        console.log(Object.values(prices))
-        //allData.map(x => console.log(x.length)) // check all vals
-        // var trace1 = {
-        //     y: Object.values(prices).slice(0,100),
-        //     x: Object.values(supply).slice(0,100),
-        //     mode: 'markers',
-        //     type: 'scatter'
-        // };
-
-        var trace1 = {
-            x: Object.values(prices),
-            type: 'histogram',
-            histnorm: 'probability',
-            xbins: {
-                end: 60000, 
-                size: 10, 
-                start: 1
-            }
-        }
-        var data = [trace1];
-        var layout = {
-            title: 'Price Distribution',
-            showlegend: false,
-            height: 400,
-            width: 400
-        };
-
-        Plotly.newPlot('bubbleChart', data, layout);
-
-
-
-
-
-
-
-        // // Decided to use datatables rather than code my own sort behavior
-        // function filterTable(colIndex, searchTarget) {
-        //     table = document.getElementById("myTable");
-        //     tr = table.getElementsByTagName("tr");
-
-        //     for (i = 0; i < tr.length; i++) {
-        //         td = tr[i].getElementsByTagName("td")[colIndex];
-        //         if (td) {
-        //             if (td.innerHTML.indexOf(searchTarget) > -1) {
-        //                 tr[i].style.display = "";
-        //             } else {
-        //                 tr[i].style.display = "none";
-        //             }
-        //         }
-        //     }
-        // } // end filterTable
-
-        // let textInput = document.getElementById('nameTextInput')
-        // textInput.addEventListener('keyup', (e) => {
-        //     e.preventDefault();
-        //     let inputVal = document.getElementById('nameTextInput').value;
-        //     filterTable(0, inputVal)
-        // })
-
-        // // Deal with checkbox - create a function called filter table
-        // let cb = document.getElementById('statusFilterCheck')
-        // cb.addEventListener('change', function () {
-        //     if (this.checked) {
-        //         // Checkbox is checked..
-        //         console.log('checked now')
-        //     } else {
-        //         // Checkbox is not checked..
-        //         console.log('unchecked now')
-        //     }
-        // });
-
-
-
-    </script>
 
 
 </body>

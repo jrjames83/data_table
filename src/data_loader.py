@@ -1,12 +1,7 @@
 import csv
-import pandas as pd
 
 
-# Convert into a class that has load_html_data, load_json_data, filtering options, etc...
-
-# Add a test or two
-
-def load_coin_data(sorted=False):
+def load_coin_data(sort_by=None, sort_order=None):
     with open('static/coins.txt') as f:
         reader = csv.reader(f)
         next(reader)
@@ -29,7 +24,3 @@ def load_coin_data(sorted=False):
                 "Status": status
             })
     return dict_rows
-
-def load_summary_table():
-    df = pd.DataFrame.from_records(load_coin_data())
-    # Group by or whatever here
